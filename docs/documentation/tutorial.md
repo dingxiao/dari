@@ -11,7 +11,7 @@ section: documentation
 
 Dari provides a Maven archetype to help you quickly setup a new Dari web
 project. After running this command you will have a project directory
-named after the `artifacedId` you provided.
+named after the `artifactId` you provided.
 
 This archetype has been tested with Maven version 3.x.
 
@@ -20,8 +20,8 @@ This archetype has been tested with Maven version 3.x.
         -DarchetypeGroupId=com.psddev \
         -DarchetypeArtifactId=dari-app-archetype \
         -DarchetypeVersion=2.0-SNAPSHOT \
-        -DgroupId=com.yourcompany  \
-        -DartifactId=yourproject
+        -DgroupId=demo.poll  \
+        -DartifactId=poll-demo
 
 ### Maven Archetype Setup
 
@@ -52,10 +52,10 @@ default Dari webpage.
 
 As part of the Dari distribution you are provided with a suite of debugging
 tools that will aide you in the development process. They can all be accessed
-from your browser at http://localhost:8080/_debug/ and individually by appending
+from your browser at **http://localhost:8080/_debug/** and individually by appending
 the tool name to the end of the URL. A few key ones referenced in this tutorial
-are outlined below. For a full more detailed list refer to the
-**debugging tools** section of the documentation.
+are outlined below. For a full detailed list refer to the **debugging tools**
+section of the documentation.
 
 code
 : Execute arbitrary blocks of code, create new Java files, and edit existing
@@ -71,9 +71,6 @@ db-schema
 query
 : Database agnostic query interface, coupled with an object data editor.
 
-stats
-: Global application performance monitoring.
-
 task
 : Background task monitoring with controls to stop, start, and pause taks.
 
@@ -81,7 +78,7 @@ task
 ### Writing you first Dari Application ###
 
 Now let's build a simple Polls application. At the end of this tutorial you 
-should have a basic understanding of how to model and querying data using Dari,
+should have a basic understanding of how to model and query data using Dari,
 as well as some of the web-based tools available that make it easy to work with
 Dari.
 
@@ -102,9 +99,29 @@ Polls application.
     <strong>TIP:</strong>
     <p>You can create new Java classes directly from your browser by using the
     <strong>code</strong> debug tool, selecting <strong>NEW CLASS</strong> from
-    the dropdown, pasting the code into the editor and clicking Save.</p>
+    the dropdown in the header, pasting the code into the editor and clicking
+    Save.</p>
 </div>
 
+{% highlight java %}
+package demo.poll;
+
+import com.psddev.dari.db.*;
+import com.psddev.dari.util.*;
+import java.util.*;
+
+public class Answer extends Record {
+    private String answer;
+
+    public String getAnswer() {
+        return answer;
+    }
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+}
+{% endhighlight %}
+---
 {% highlight java %}
 package demo.poll;
 
@@ -127,25 +144,6 @@ public class Poll extends Record {
     }
     public void setAnswers(List<Answer> answers) {
         this.answers = answers;
-    }
-}
-{% endhighlight %}
----
-{% highlight java %}
-package demo.poll;
-
-import com.psddev.dari.db.*;
-import com.psddev.dari.util.*;
-import java.util.*;
-
-public class Answer extends Record {
-    private String answer;
-
-    public String getAnswer() {
-        return answer;
-    }
-    public void setAnswer(String answer) {
-        this.answer = answer;
     }
 }
 {% endhighlight %}
@@ -182,7 +180,7 @@ like so:
     http://localhost:8080/_debug/?_reload=true
 
 Dari is now aware of our new data model.  Lets see the visual representation of
-it using the `schema` debug tool. Once there select `demo.poll.Poll` and
+it using the **db-schema** debug tool. Once there select `demo.poll.Poll` and
 `demo.poll.User` from the dropdown and click View.  This is exactly what we
 expect so lets move on.
 
@@ -204,7 +202,7 @@ public class User extends Record {
     // ... fields, getters, setters...
 
     public static User createUser(String userName) {
-        if (userName == null || "".equals(userName = userName.trim()) {
+        if (userName == null || "".equals(userName = userName.trim())) {
             return null;
         } else {
             User user = new User();
@@ -233,8 +231,15 @@ For more information on querying refer to the [Querying section](querying.html)
 of the documentation.
 
 If you haven't tried the `code` editor debug tool already, we'll use it now
-to save some users.  Paste the following snippet into the `code` editor and
-click **Run**:
+to save some users.  Paste the following snippet into the **code** debug tool
+editor ensuring **PLAYGROUND** is selected in the dropdown and click **Run**:
+
+<div class="alert alert-block">
+    <strong>TIP:</strong>
+    <p>When executing arbitrary code within the code servlet always make sure
+    PLAYGROUND is selected from the dropdown menu, to ensure you are not
+    editing a file.</p>
+</div>
 
 {% highlight java %}
 import com.psddev.dari.db.*;
@@ -260,16 +265,16 @@ public class Code {
 }
 {% endhighlight %}
 
-We return the list of created users so the `code` editor outputs the
+We return the list of created users so the **code** editor outputs the
 internal representation of each of the items as seen below:
 
 ![Poll Example 2](img/tutorial/poll02.png)
 
-However, this doesn't mean that our objects were actually saved to the
-underlying database.  If we removed the call to `save()` in our
-`User.createUser()` method the code editor would still print the same thing.
-Let's replace the code in the editor with the following to verify our objects
-were saved, and click **Run**.
+However, just because we see the output, doesn't mean that our objects were actually
+saved to the underlying database.  If we removed the call to `save()` in our
+`User.createUser()` method the code editor would still output the same thing.
+We need to execute a query to be sure. Let's replace the code in the editor
+with the following to verify our objects were saved, and click **Run**.
 
 {% highlight java %}
 public class Code {
@@ -293,10 +298,10 @@ public class Code {
 }
 {% endhighlight %}
 
-![Poll Example 4](img/tutorial/poll04.png)
+![Poll Example 3](img/tutorial/poll03.png)
 
 Oops! We get an error! Let's take a step back from our code and use the `query`
-debug tool to try the same query.  Once inside the `query` tool, select
+debug tool to try the same query.  Once inside the **query** debug tool, select
 User (demo.poll.User) from the TYPES dropdown. Then in the text area right
 below type:
 
@@ -304,7 +309,7 @@ below type:
 
 and then click **Run**: 
 
-![Poll Example 3](img/tutorial/poll03.png)
+![Poll Example 4](img/tutorial/poll04.png)
 
 Indeed we get the same error.  Specifically, it says `Can't query
 [demo.poll.User/userName] because it's not indexed!`  In Dari, any time you
@@ -370,28 +375,29 @@ first!).
 
 Ooops! No results were found. This happens because our User objects were saved
 prior to adding the `@Indexed` annotation, so it only applies to new objects
-that we create.  The `db-bulk` debug tool can help us here.  We will use the
+that we create.  The **db-bulk** debug tool can help us here.  We will use the
 **Indexer** to fix the indexes on the objects that are missing them.  Select
 `demo.poll.User` from the dropdown leaving the other fields as their defaults 
 for now, and click Start.  This kicks off a background task that we can monitor
-in yet another Dari debug tool, `task`, by clicking the link generated under
+in yet another Dari debug tool, **task**, by clicking the link generated under
 **Ongoing Tasks**.
 
 ![Poll Example 6](img/tutorial/poll06.png)
 
-We won't go into detail about the `task` tool now, instead lets retry our query
-again to make sure our fields are indexed.
+We won't go into detail about the **task** tool now, instead lets retry our
+query to make sure our fields are indexed (AGAIN, making sure User is selected
+from the dropdown first).
 
-Voila!! 1 result found for "David".  And we can verify the same using our code
+Voila!! 1 result found for "David".  We can verify the same using our code
 snippet from earlier.
 
 ![Poll Example 7](img/tutorial/poll07.png)
 
 Before moving on, let's take a quick look at some of the additional features the
-`query` tool has to offer. Clicking a result hyperlink yields a popup that lets us view and edit the raw
-JSON representation of the object, as well as a tab presenting an auto-generated
-UI where we can easily change the field values on the object and save them.
-Cool!
+**query** tool has to offer. Clicking a result hyperlink yields a popup that
+lets us view and edit the raw JSON representation of the object, as well as a
+tab presenting an auto-generated UI where we can easily change the field values
+on the object and save them. Cool!
 
 ![Poll Example 8](img/tutorial/poll08.png)
 ![Poll Example 9](img/tutorial/poll09.png)
@@ -435,10 +441,10 @@ public class User extends Record {
                 .first();
 
         if (user == null) {
-            if (userName == null || "".equals(userName = userName.trim()) {
+            if (userName == null || "".equals(userName = userName.trim())) {
                 return null;
             } else {
-                User user = new User();
+                user = new User();
                 user.setUserName(userName);
                 user.save();
                 return user;
@@ -452,7 +458,7 @@ public class User extends Record {
 
 Additionally, we need a way to store a user's response to the poll so we'll
 create a brand new object `UserResponse` remembering this time to include
-the `@Indexed` annotation. And then create an instance method on Poll called
+the `@Indexed` annotation. Then create an instance method on Poll called
 `submit(User, Answer)`.
 
 {% highlight java %}
@@ -502,14 +508,15 @@ public class Poll extends Record {
 }
 {% endhighlight %}
 
-Let's check out our updated model with the `db-schema` tool. Remember to
+Let's check out our updated model with the **db-schema** tool. Remember to
 manually reload the application if it does not do it automatically. Select
 `Poll` and `User Repsonse` from the dropdown. 
 
 ![Poll Example 10](img/tutorial/poll10.png)
 
 Now that we have a full working model lets create some polls and responses that
-we can play with. Back to the `code` tool!  Execute the following code:
+we can play with. Back to the **code** editor!  Execute the following code in
+the PLAYGROUND:
 
 {% highlight java %}
 public class Code {
@@ -529,7 +536,7 @@ public class Code {
 
         // Randomly assign an answer for the users
         int counter = 0;
-        for (User user : Query.for(User.class).selectAll()) {
+        for (User user : Query.from(User.class).selectAll()) {
             UserResponse response = poll.submit(user, answers.get(counter % 3));
             createdObjects.add(response);
             counter++;
@@ -540,9 +547,9 @@ public class Code {
 }
 {% endhighlight %}
 
-The output from the `code` tool shows us all the objects that we just created.
+The output from the **code** editor shows us all 9 objects that we just created.
 
-*** INSERT IMAGE HERE ? ***
+![Poll Example 11](img/tutorial/poll11.png)
 
 The last thing we need to do is write a query that tells us how many responses
 we got for our poll as well as the distribution of answers.  We'll start with
@@ -556,9 +563,9 @@ public class Code {
                 .where("question = ?", "What is Dari?")
                 .first();
 
-        List<Answer> answers = p.getAnswers();
+        List<Answer> answers = poll.getAnswers();
 
-        int responseCount = Query.from(UserResponse.class)
+        long responseCount = Query.from(UserResponse.class)
             .where("answer = ?", answers)
             .count();
         return responseCount;
@@ -573,10 +580,15 @@ to be large.  But suppose we were working in a different problem space where the
 list could grow to be hundreds or thousands of records.  This query is no longer
 feasible because it is similar to the SQL `IN` clause where you have `id IN
 (answerId1, answerId2, answerId3)`.  As the list grows larger as does the query
-execution time. Let's try to alter our model to avoid this situation and still
-be able to answer our question.  We'll remove the answers List from the Poll
-object and instead place a Poll field on the Answer class.  Here are the updated
-class files.
+execution time, and more bytes are needed to transfer the query. Let's try to
+alter our model to avoid this situation and still be able to answer our
+question.  We'll remove the answers List from the Poll object and instead place
+a Poll field on the Answer class.
+
+We also need to update our Poll helper methods to accomodate the new model.
+Here are the updated methods along with a new `getAnswers()` method that relies
+on a query instead of the instance variable we just removed. Here are the
+updated class files.
 
 {% highlight java %}
 public class Poll extends Record {
@@ -588,38 +600,6 @@ public class Poll extends Record {
     public void setQuestion(String question) {
         this.question = question;
     }
-    
-    // ... helper methods ...
-}
-{% endhighlight %}
----
-{% highlight java %}
-public class Answer extends Record {
-    private String answer;
-    @Indexed Poll poll;
-
-    public String getAnswer() {
-        return answer;
-    }
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-    public Poll getPoll() {
-        return poll;
-    }
-    public void setPoll(Poll poll) {
-        this.poll = poll;
-    }
-}
-{% endhighlight %}
-
-We also need to update our Poll helper methods to accomodate the new model.
-Here are the updated methods along with a new `getAnswers()` method that relies
-on a query instead of the instance variable we just removed.
-
-{% highlight java %}
-public class Poll extends Record {
-    // ... fields, getters, setters ...
     
     public static Poll createPoll(String question, List<String> answerStrings) {
 
@@ -643,7 +623,7 @@ public class Poll extends Record {
 
     public UserResponse submit(User user, Answer answer) {
 
-        if (user != null && answer != null && answer.is("poll = ?", this)) {
+        if (user != null && answer != null && this.equals(answer.getPoll())) {
             UserResponse response = new UserResponse();
             response.setUser(user);
             response.setAnswer(answer);
@@ -656,54 +636,84 @@ public class Poll extends Record {
     }
 }
 {% endhighlight %}
-
-In this revised example we introduce another method `is()` inherited from
-Record.  It uses the Query syntax to check if object matches the predicate. In
-this case we are verifying that the supplied answer object actually belongs to
-the current poll.
-
-Let's take one last look at our schema by selecting just `UserResponse` from
-the `db-schema` tool dropdown.  All of our objects are accessible now from
-the `UserResponse` object.
-
-![Poll Example 10](img/tutorial/poll10.png)
-
-Before we can attempt to rewrite our response count query, we have a data issue
-that needs our attention.  We removed a field that contained data, and then
-added a field which now has no data. Let's write a quick script to fix our
-existing polls.
-
+---
 {% highlight java %}
-public class Code {
-    public static Object main() throws Throwable {
+public class Answer extends Record {
+    private String answer;
+    @Indexed Poll poll;
 
-        for (Poll poll : Query.from(Poll.class).selectAll()) {
-
-            List<Answer> answers = (List<Answer>) poll.getState().get("answers");
-
-            if (answers != null) for (Answer answer : answers) {
-                answer.setPoll(poll);
-                answer.save();
-            }
-
-            poll.getState().put("answers", null);
-            poll.save();
-        }
+    public String getAnswer() {
+        return answer;
+    }
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+    public Poll getPoll() {
+        return poll;
+    }
+    public void setPoll(Poll poll) {
+        this.poll = poll;
     }
 }
 {% endhighlight %}
 
-We introduce another new method, `getState()`, that is inherited from Record.
-Even though we removed the `answers` field from our Poll class Dari doesn't
-automatically delete the corresponding data.  It still lives on the object's
-`State`. `State` is the backing `Map<String, Object>` for all Dari Records, and
-can be accessed at any time.  In the above snippet we access the `answers`
-field on each poll's State so we can re-associate based on the new model.  Once
-we're finished we remove the `answers` field from the `State` so that we don't
-have unused data hanging around.
+Let's take one last look at our schema by selecting just `UserResponse` from
+the **db-schema** tool dropdown.  All of our objects are accessible now from
+the `UserResponse` object.
 
-Finally, we can try to write our response count query again.  To do so, we'll
-make use of Dari sub-queries like so:
+![Poll Example 12](img/tutorial/poll12.png)
+
+Before we rewrite our response count query we need to wipe our poll data and
+recreate it because the curent data is in an inconsistent state after we
+changed the model.  Dari provides a convenient way to recover the data with
+the new model but that is covered in a later tutorial. Run the code below
+to delete and re-create our poll data.
+
+{% highlight java %}
+public class Code {
+    public static Object main() throws Throwable {
+    
+        // delete the data (minus users)
+        for (UserResponse response : Query.from(UserResponse.class).selectAll()) {
+            response.delete();
+        }
+        for (Poll poll : Query.from(Poll.class).selectAll()) {
+            poll.delete();
+        }
+        for (Answer answer : Query.from(Answer.class).selectAll()) {
+            answer.delete();
+        }
+
+        // recreate the data
+        List<Object> createdObjects = new ArrayList<Object>();
+
+        Poll poll = Poll.createPoll("What is Dari?",
+                java.util.Arrays.asList(
+                "A content management system",
+                "A Java development framework",
+                "A bridge"));
+        createdObjects.add(poll);
+
+        List<Answer> answers = poll.getAnswers();
+        createdObjects.addAll(answers);
+
+        // Randomly assign an answer for the users
+        int counter = 0;
+        for (User user : Query.from(User.class).selectAll()) {
+            UserResponse response = poll.submit(user, answers.get(counter % 3));
+            createdObjects.add(response);
+            counter++;
+        }
+        
+        return createdObjects;
+    }
+}
+{% endhighlight %}
+Notice we used `delete()` API that is also inherited from Record and it works
+exactly as you would expect.
+
+Lets write our response count query again.  To do so, we'll make use of Dari
+sub-queries like so:
 
 {% highlight java %}
 public class Code {
@@ -713,10 +723,10 @@ public class Code {
                 .where("question = ?", "What is Dari?")
                 .first();
 
-        Quer<Answer> answersQuery = Query.from(Answer.class)
+        Query<Answer> answersQuery = Query.from(Answer.class)
                 .where("poll = ?", poll);
 
-        int responseCount = Query.from(UserResponse.class)
+        long responseCount = Query.from(UserResponse.class)
                 .where("answer = ?", answersQuery)
                 .count();
         return responseCount;
@@ -741,7 +751,7 @@ public class Code {
                 .where("question = ?", "What is Dari?")
                 .first();
 
-        int responseCount = Query.from(UserResponse.class)
+        long responseCount = Query.from(UserResponse.class)
                 .where("answer/poll = ?", poll)
                 .count();
         return responseCount;
@@ -758,9 +768,11 @@ along with our previous one into our Poll class to complete the example.
 {% highlight java %}
 public class Poll extends Record {
 
-    public Map<Answer, Long> getPollResults() {
+    // ... fields, getters, setters...
 
-        Map<Answer, Long> pollResults = new HashMap<Answer, Long>();
+    public Map<String, Long> getPollResults() {
+
+        Map<String, Long> pollResults = new HashMap<String, Long>();
 
         Query<UserResponse> responseQuery = Query.from(UserResponse.class)
                 .where("answer/poll = ?", this);
@@ -774,7 +786,7 @@ public class Poll extends Record {
                 Answer answer = (Answer) key0;
                 long answerCount = grouping.getCount();
 
-                pollResults.put(answer, answerCount);
+                pollResults.put(answer.getAnswer(), answerCount);
             }
         }
 
@@ -789,7 +801,7 @@ public class Poll extends Record {
 }
 {% endhighlight %}
 
-Finally, let's test it out in the `code` tool.
+Finally, let's test it out in the **code** tool playground.
 
 {% highlight java %}
 public class Code {
@@ -804,18 +816,22 @@ public class Code {
 }
 {% endhighlight %}
 
-*** INSERT IMAGE HERE  ***
+![Poll Example 13](img/tutorial/poll13.png)
 
-You can download the [full demo here](/assets/dari-poll-demo.tar.gz).
+Tada! We're done!  And in case you were wondering, Dari is NOT a content
+management system, it is a Java development framework and the word "Dari" is
+"bridge" in Korean. :)
+
+You can download the [full demo here](/assets/dari-poll-demo1.tar.gz).
 
 To install and run, simply uncompress the tarball:
 
-    tar -xzf dari-poll-demo.tar.gz
+    tar -xzf dari-poll-demo1.tar.gz
 
 Change to the directory:
 
     ls
-    cd dari-poll-demo
+    cd dari-poll-demo1
 
 And run the application with:
 
