@@ -251,41 +251,20 @@ public class Code {
     public static Object main() throws Throwable {
         String[] names = {"Hyoo", "Jeremy", "Kelly", "Dan", "David"};
 
-        List<User> createdUsers = new ArrayList<User>();
-
         for (String name : names) {
-            User user = User.createUser(name);
-            if (user != null) {
-                createdUsers.add(user);
-            }
+            User.createUser(name);
         }
 
-        return createdUsers;
-    }
-}
-{% endhighlight %}
-
-We return the list of created users so the **code** editor outputs the
-internal representation of each of the items as seen below:
-
-![Poll Example 2](img/tutorial/poll02.png)
-
-However, just because we see the output, doesn't mean that our objects were actually
-saved to the underlying database.  If we removed the call to `save()` in our
-`User.createUser()` method the code editor would still output the same thing.
-We need to execute a query to be sure. Let's replace the code in the editor
-with the following to verify our objects were saved, and click **Run**.
-
-{% highlight java %}
-public class Code {
-    public static Object main() throws Throwable {
         return Query.from(User.class).selectAll();
     }
 }
 {% endhighlight %}
 
-Indeed, we get the same output because the `selectAll()` API also returns a list
-of objects.
+We return a query result for the object we just created and the **code** editor
+outputs the internal representation of each of the items as seen below:
+
+![Poll Example 2](img/tutorial/poll02.png)
+
 
 Let's test the other method we wrote and query for a specific user. Paste
 the following snippet into the code editor and click **Run**.
