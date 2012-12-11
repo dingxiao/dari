@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -51,6 +52,7 @@ public class WebDatabase extends AbstractDatabase<Void> {
 
     private String remoteUrl;
     private String remoteDatabase;
+    private Credentials credentials;
 
     /** Returns the remote URL. */
     public String getRemoteUrl() {
@@ -70,6 +72,14 @@ public class WebDatabase extends AbstractDatabase<Void> {
     /** Sets the remote database name. */
     public void setRemoteDatabase(String remoteDatabase) {
         this.remoteDatabase = remoteDatabase;
+    }
+
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
     // --- AbstractDatabase support ---
@@ -146,8 +156,12 @@ public class WebDatabase extends AbstractDatabase<Void> {
 
     private Object sendRequest(List<NameValuePair> params) {
         String response;
-        HttpClient client = new DefaultHttpClient();
-
+        DefaultHttpClient client = new DefaultHttpClient();
+        
+        if(this.getCredentials() != null){
+            client.getCredentialsProvider().setCredentials(AuthScope.ANY, this.getCredentials());
+        }
+        
         try {
             HttpPost post = new HttpPost(getRemoteUrl());
             post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
